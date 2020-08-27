@@ -33,7 +33,7 @@ async def spit(ctx, at):
 
 @bot.command(name='ion')
 async def ion(ctx):
-    lines = open('./other/potion_quotes.txt').read().splitlines()
+    lines = open('./resources/other/potion_quotes.txt').read().splitlines()
     myline = random.choice(lines)
     response = myline
     await ctx.send(response)
@@ -53,7 +53,7 @@ async def invite(ctx):
 # Provale
 @bot.command(name='acim')
 async def acim(ctx):
-    lines = open('./provale/acim.txt').read().splitlines()
+    lines = open('./resources/provale/acim.txt').read().splitlines()
     myline = random.choice(lines)
     response = '```' + myline + '```'
     await ctx.send(response)
@@ -61,7 +61,7 @@ async def acim(ctx):
 
 @bot.command(name='acimadd')
 async def acimadd(ctx, text):
-    f = open('./provale/acim.txt', "a+")
+    f = open('./resources/provale/acim.txt', "a+")
     f.write("\n" + str(date.today().strftime("%d.%m.%Y")) + " -- " + text)
     f.close
     await ctx.send("Nice!")
@@ -69,7 +69,7 @@ async def acimadd(ctx, text):
 
 @bot.command(name='lazke')
 async def lazke(ctx):
-    lines = open('./provale/lazke.txt').read().splitlines()
+    lines = open('./resources/provale/lazke.txt').read().splitlines()
     myline = random.choice(lines)
     response = '```' + myline + '```'
     await ctx.send(response)
@@ -77,7 +77,7 @@ async def lazke(ctx):
 
 @bot.command(name='lazkeadd')
 async def lazkeadd(ctx, text):
-    f = open('./provale/lazke.txt', "a+")
+    f = open('./resources/provale/lazke.txt', "a+")
     f.write("\n" + str(date.today().strftime("%d.%m.%Y")) + " -- " + text)
     f.close
     await ctx.send("Nice!")
@@ -85,7 +85,7 @@ async def lazkeadd(ctx, text):
 
 @bot.command(name='ispala')
 async def ispala(ctx):
-    lines = open('./provale/ispala.txt').read().splitlines()
+    lines = open('./resources/provale/ispala.txt').read().splitlines()
     myline = random.choice(lines)
     response = '```' + myline + '```'
     await ctx.send(response)
@@ -93,7 +93,7 @@ async def ispala(ctx):
 
 @bot.command(name='ispalaadd')
 async def ispalaadd(ctx, text):
-    f = open('./provale/ispala.txt', "a+")
+    f = open('./resources/provale/ispala.txt', "a+")
     f.write("\n" + str(date.today().strftime("%d.%m.%Y")) + " -- " + text)
     f.close
     await ctx.send("Nice!")
@@ -101,7 +101,7 @@ async def ispalaadd(ctx, text):
 
 @bot.command(name='moca')
 async def moca(ctx):
-    lines = open('./provale/moca.txt').read().splitlines()
+    lines = open('./resources/provale/moca.txt').read().splitlines()
     myline = random.choice(lines)
     response = '```' + myline + '```'
     await ctx.send(response)
@@ -109,7 +109,7 @@ async def moca(ctx):
 
 @bot.command(name='mocaadd')
 async def mocaadd(ctx, text):
-    f = open('./provale/moca.txt', "a+")
+    f = open('./resources/provale/moca.txt', "a+")
     f.write("\n" + str(date.today().strftime("%d.%m.%Y")) + " -- " + text)
     f.close
     await ctx.send("Nice!")
@@ -132,7 +132,7 @@ async def movie(ctx):
 @bot.command(name='movielist')
 async def movielist(ctx):
 
-    f = open('./other/movies.txt')
+    f = open('./resources/other/movies.txt')
     lines = f.read().splitlines()
     response = '**Movie list:**\n'
     for i in lines:
@@ -143,9 +143,9 @@ async def movielist(ctx):
 @bot.command(name='movieremove')
 async def movieremove(ctx):
 
-    with open("./other/movies.txt", "r") as f:
+    with open("./resources/other/movies.txt", "r") as f:
         lines = f.readlines()
-    with open("./other/movies.txt", "w") as f:
+    with open("./resources/other/movies.txt", "w") as f:
         for line in lines:
             if str(ctx.message.author) in line.strip("\n"):
                 await ctx.send(line.strip("\n") + " removed!")
@@ -160,7 +160,7 @@ async def movievote(ctx):
 
     global uservotelist
     uservotelist = []
-    f = open('./other/movies.txt')
+    f = open('./resources/other/movies.txt')
     lines = f.read().splitlines()  # linenum
     linenum = 0
     response = "**Movie list:** \n\n"
@@ -173,7 +173,7 @@ async def movievote(ctx):
                  '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟',
                  '🕚', '🕛', '🕐', '🕑', '🕒', '🕓',
                  '🕔', '🕕', '🕖', '🕗', '🕘', '🕙'][:linenum]
-    # lines = open('./other/movies.txt').read().splitlines()
+    # lines = open('./resources/other/movies.txt').read().splitlines()
 
     msg = await ctx.send(response + "\n**React** to add a vote !\nTime remaining to vote: **~ " + str(delayseconds) + " seconds.**")
     msgid = msg.id
@@ -221,14 +221,14 @@ async def movievote(ctx):
             firstplacelistindex += 1
 
         emoteid = random.choice(firstplacelist)
-        lines = open('./other/movies.txt').read().splitlines()
+        lines = open('./resources/other/movies.txt').read().splitlines()
         myline = lines[emoteid]
         response = '```First place determined randomly: ' + myline + '```'
         await ctx.send(response)
 
-        with open("./other/movies.txt", "r") as f:
+        with open("./resources/other/movies.txt", "r") as f:
             lines = f.readlines()
-        with open("./other/movies.txt", "w") as f:
+        with open("./resources/other/movies.txt", "w") as f:
             for line in lines:
                 if line.strip("\n") != myline:
                     f.write(line)
@@ -237,14 +237,14 @@ async def movievote(ctx):
         emoteid = 0
         for emotecode, mostvotes in counts.items():
             if maxvote == mostvotes:
-                lines = open('./other/movies.txt').read().splitlines()
+                lines = open('./resources/other/movies.txt').read().splitlines()
                 myline = lines[emoteid]
                 response = '```' + myline + '```'
                 await ctx.send(response)
 
-                with open("./other/movies.txt", "r") as f:
+                with open("./resources/other/movies.txt", "r") as f:
                     lines = f.readlines()
-                with open("./other/movies.txt", "w") as f:
+                with open("./resources/other/movies.txt", "w") as f:
                     for line in lines:
                         if line.strip("\n") != myline:
                             f.write(line)
@@ -255,13 +255,13 @@ async def movievote(ctx):
 @bot.command(name='movieadd')
 async def movieadd(ctx, text):
 
-    with open('./other/movies.txt') as f:
+    with open('./resources/other/movies.txt') as f:
         if str(ctx.message.author) in f.read():
             await ctx.send("You have already suggested a movie!")
             f.close()
             return
 
-    f = open('./other/movies.txt', "a+")
+    f = open('./resources/other/movies.txt', "a+")
 
     f.write(str(ctx.message.author) + " -- " + text + "\n")
     f.close
@@ -270,14 +270,14 @@ async def movieadd(ctx, text):
 
 @bot.command(name='movierandom')
 async def movierandom(ctx):
-    lines = open('./other/movies.txt').read().splitlines()
+    lines = open('./resources/other/movies.txt').read().splitlines()
     myline = random.choice(lines)
     response = '```' + myline + '```'
     await ctx.send(response)
 
-    with open("./other/movies.txt", "r") as f:
+    with open("./resources/other/movies.txt", "r") as f:
         lines = f.readlines()
-    with open("./other/movies.txt", "w") as f:
+    with open("./resources/other/movies.txt", "w") as f:
         for line in lines:
             if line.strip("\n") != myline:
                 f.write(line)
@@ -334,8 +334,8 @@ async def play(ctx, filename):
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
-    filepath = './mp3/' + filename + '.mp3'
-    filepath2 = './mp3/' + filename + '.wav'
+    filepath = './resources/sounds/mp3/' + filename + '.mp3'
+    filepath2 = './resources/sounds/mp3/' + filename + '.wav'
 
     if os.path.exists(filepath) or os.path.exists(filepath2):
 
@@ -362,7 +362,7 @@ async def play(ctx, filename):
         await ctx.send("File doesn't exist")
 
     await asyncio.sleep(600)
-    voice.play(FFmpegPCMAudio('./mp3/lol.mp3'))
+    voice.play(FFmpegPCMAudio('./resources/sounds/mp3/lol.mp3'))
     await asyncio.sleep(3)
 
     guild = ctx.message.guild.voice_client
@@ -400,7 +400,7 @@ async def playcrusader(ctx):
 
 
     await asyncio.sleep(600)
-    voice.play(FFmpegPCMAudio('./mp3/lol.mp3'))
+    voice.play(FFmpegPCMAudio('./resources/sounds/mp3/lol.mp3'))
     await asyncio.sleep(3)
 
     guild = ctx.message.guild.voice_client
@@ -409,7 +409,7 @@ async def playcrusader(ctx):
 bot.remove_command("playhelp")
 @bot.command(name='playhelp')
 async def playhelp(ctx):
-    response = os.listdir("E:/Python/PZ/mp3/")
+    response = os.listdir("E:/Python/PZ/sounds/mp3/")
     responseString = ""
     currChar = response[0][0]
     for i in response:
@@ -427,7 +427,7 @@ async def playhelp(ctx):
 @bot.command(pass_context=True)
 async def leave(ctx):
     voice = get(bot.voice_clients, guild=ctx.guild)
-    voice.play(FFmpegPCMAudio('./mp3/lol.mp3'))
+    voice.play(FFmpegPCMAudio('./resources/sounds/mp3/lol.mp3'))
     await asyncio.sleep(3)
     guild = ctx.message.guild.voice_client
     await guild.disconnect()
@@ -476,8 +476,8 @@ async def on_member_join(member):
     await member.dm_channel.send(
         f'Well met {member.name}. Welcome to ' + str(member.guild) + '!')
 
-# Memes
 
+############### Memes ###############
 
 @bot.command(name='drakememe')
 async def drakememe(ctx, caption0: str, caption1: str):
@@ -611,8 +611,8 @@ async def on_voice_state_update(member, before, after):
                 else:
                     voice = await before.channel.connect()
 
-                voice.play(FFmpegPCMAudio('./callLeaver/' +
-                                        random.choice(os.listdir('./callLeaver/'))))
+                voice.play(FFmpegPCMAudio('./resources/sounds/callleaver/' +
+                                        random.choice(os.listdir('./resources/sounds/callleaver/'))))
                 await asyncio.sleep(6)
                 guild = member.guild.voice_client
                 await guild.disconnect()
