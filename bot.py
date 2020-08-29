@@ -22,7 +22,6 @@ acc_password = os.getenv('IMGFLIP_PASSWORD')
 bot = commands.Bot(command_prefix='pot')
 votemsgid = 123  # placeholder
 defaultrng = 80
-commandListHelp = 'Available commands:\n\n>>> ("pot" prefix) \n\n(pot)ion, spit, invite, \nispala, acim, lazke, moca, moki, \nispalaadd, acimadd, lazkeadd, mocaadd \nroll default 100, deathroll number gold name1 name2, \nplay songname, playhelp, leave, playcrusader, \ntimer, \ndrakememe "firstframe" "secondframe"\nmovie, movieadd "moviename", movievote, mocierandom'
 
 
 @bot.command(name='spit')
@@ -39,8 +38,11 @@ async def ion(ctx):
     await ctx.send(response)
 
 bot.remove_command("help")
+
+
 @bot.command(name='help')
 async def help(ctx):
+    commandListHelp = open('./resources/other/help.txt').read()
     response = commandListHelp
     await ctx.send(response)
 
@@ -51,6 +53,8 @@ async def invite(ctx):
     await ctx.send(response)
 
 # Provale
+
+
 @bot.command(name='acim')
 async def acim(ctx):
     lines = open('./resources/provale/acim.txt').read().splitlines()
@@ -117,8 +121,18 @@ async def mocaadd(ctx, text):
 
 @bot.command(name='moki')
 async def moki(ctx):
-    response = "https://gamepedia.cursecdn.com/terraria_gamepedia/1/1e/Propeller_Gato_%28animated%29.gif?version=ffbee9042204d124e5bd44f8721b9a00"
+    lines = open('./resources/provale/moki.txt').read().splitlines()
+    myline = random.choice(lines)
+    response = myline
     await ctx.send(response)
+
+@bot.command(name='ogi')
+async def ogi(ctx):
+    lines = open('./resources/provale/ogi.txt').read().splitlines()
+    myline = random.choice(lines)
+    response = myline
+    await ctx.send(response)
+
 
 # Movies
 
@@ -237,7 +251,8 @@ async def movievote(ctx):
         emoteid = 0
         for emotecode, mostvotes in counts.items():
             if maxvote == mostvotes:
-                lines = open('./resources/other/movies.txt').read().splitlines()
+                lines = open(
+                    './resources/other/movies.txt').read().splitlines()
                 myline = lines[emoteid]
                 response = '```' + myline + '```'
                 await ctx.send(response)
@@ -398,7 +413,6 @@ async def playcrusader(ctx):
     await ctx.message.delete(delay=5)
     await msg.delete(delay=5)
 
-
     await asyncio.sleep(600)
     voice.play(FFmpegPCMAudio('./resources/sounds/mp3/lol.mp3'))
     await asyncio.sleep(3)
@@ -407,6 +421,8 @@ async def playcrusader(ctx):
     await guild.disconnect()
 
 bot.remove_command("playhelp")
+
+
 @bot.command(name='playhelp')
 async def playhelp(ctx):
     response = os.listdir("E:/Python/PZ/sounds/mp3/")
@@ -497,8 +513,8 @@ async def drakememe(ctx, caption0: str, caption1: str):
 @bot.command(name='lazarmeme')
 async def lazarmeme(ctx, caption1: str):
     url = 'https://api.imgflip.com/caption_image'
-    boxes ='{"text":caption1}'
-    
+    boxes = '{"text":caption1}'
+
     params = dict(template_id=102156234, username=acc_username,
                   password=acc_password, boxes=boxes)
 
@@ -564,12 +580,11 @@ async def on_message(message):
             # print ("Moca rolao: " + str(randroll) + str(message.content))
             if message.content:
                 defaultrng = defaultrng + random.randint(30, 70)
-                await message.author.edit(nick = message.content)
+                await message.author.edit(nick=message.content)
         else:
             # print ("Moca nije rolao: " + str(randroll) + str(message.content))
             randminiroll = random.randint(3, 10)
             defaultrng = defaultrng - randminiroll
-        
 
     # if any(message.guild.emojis in message.clean_content.lower()):
     #     print ("ima")
@@ -584,6 +599,7 @@ async def on_message(message):
 
 # Voice leave
 
+
 @bot.event
 async def on_voice_state_update(member, before, after):
     now = datetime.now()
@@ -595,9 +611,10 @@ async def on_voice_state_update(member, before, after):
         # User Joins a voice channel
 
     elif(after.channel is None):
-        if before.channel.members: # check if list members is empty
+        if before.channel.members:  # check if list members is empty
             randroll = random.randint(1, 100)
-            print('Left the voice:   ' + str(member) + " Current Time = " + str(current_time) + " " + str(randroll))
+            print('Left the voice:   ' + str(member) +
+                  " Current Time = " + str(current_time) + " " + str(randroll))
             voice = get(bot.voice_clients, guild=member.guild)
 
             if (randroll > 80):
@@ -612,7 +629,7 @@ async def on_voice_state_update(member, before, after):
                     voice = await before.channel.connect()
 
                 voice.play(FFmpegPCMAudio('./resources/sounds/callleaver/' +
-                                        random.choice(os.listdir('./resources/sounds/callleaver/'))))
+                                          random.choice(os.listdir('./resources/sounds/callleaver/'))))
                 await asyncio.sleep(6)
                 guild = member.guild.voice_client
                 await guild.disconnect()
