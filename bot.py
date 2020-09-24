@@ -29,6 +29,9 @@ async def spit(ctx, at):
     response = 'You spit at ' + at
     await ctx.send(response)
 
+@spit.error
+async def spit_on_error(ctx, error):
+    await ctx.send("Invalid arguments. The correct arguments are: \n`potspit NAME`")
 
 @bot.command(name='ion')
 async def ion(ctx):
@@ -53,7 +56,6 @@ async def invite(ctx):
     await ctx.send(response)
 
 # Provale
-
 
 @bot.command(name='acim')
 async def acim(ctx):
@@ -132,6 +134,21 @@ async def ogi(ctx):
     myline = random.choice(lines)
     response = myline
     await ctx.send(response)
+
+@bot.command(name='zalba')
+async def zalba(ctx):
+    if str(ctx.message.author) == "mokipls#3894":
+        await ctx.send("I bow to your will")
+    elif str(ctx.message.author) == "harrowr#8165":
+        await ctx.send("...")
+    elif str(ctx.message.author) == "lazke#2166":
+        await ctx.send("Nemoj samo ti molim te smucio si nam se vise sa te fore")
+    elif str(ctx.message.author) == "Durion#4219":
+        await ctx.send("Nikako")
+    elif str(ctx.message.author) == "Aweron#8635":
+        await ctx.send("De si be Awerone")
+    else:
+        await ctx.send("Nemoj molim te, nemoj molim te, nemoj molim te.")
 
 
 # Movies
@@ -425,7 +442,7 @@ bot.remove_command("playhelp")
 
 @bot.command(name='playhelp')
 async def playhelp(ctx):
-    response = os.listdir("E:/Python/PZ/sounds/mp3/")
+    response = os.listdir("./resources/sounds/mp3/")
     responseString = ""
     currChar = response[0][0]
     for i in response:
@@ -553,6 +570,10 @@ async def on_message(message):
         emoji = discord.utils.get(message.guild.emojis, name='momcilo')
         if emoji:
             await message.add_reaction(emoji)
+    if 'potkodjen' in message.clean_content.lower():  #Kodjen
+        emoji = discord.utils.get(message.guild.emojis, name='astor')
+        if emoji:
+            await message.add_reaction(emoji)
     if 'lazar' in message.clean_content.lower():
         emoji = discord.utils.get(message.guild.emojis, name='lazar')
         if emoji:
@@ -579,8 +600,10 @@ async def on_message(message):
         if (randroll > defaultrng):
             # print ("Moca rolao: " + str(randroll) + str(message.content))
             if message.content:
-                defaultrng = defaultrng + random.randint(30, 70)
-                await message.author.edit(nick=message.content)
+                if "<@" not in message.content: #User id on discord
+                    if "http" not in message.content:  #Link
+                        defaultrng = defaultrng + random.randint(30, 70)
+                        await message.author.edit(nick=message.content)
         else:
             # print ("Moca nije rolao: " + str(randroll) + str(message.content))
             randminiroll = random.randint(3, 10)
