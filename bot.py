@@ -22,6 +22,7 @@ acc_password = os.getenv('IMGFLIP_PASSWORD')
 bot = commands.Bot(command_prefix='pot')
 votemsgid = 123  # placeholder
 defaultrng = 80
+lastmessage = "placeholder message"
 
 
 @bot.command(name='spit')
@@ -559,6 +560,7 @@ async def on_message(message):
         return
     if bot.user.mentioned_in(message) and message.mention_everyone is False:
         if 'help' in message.content.lower():
+            commandListHelp = open('./resources/other/help.txt').read()
             await message.channel.send(commandListHelp)
         else:
             await message.add_reaction('👀')  # :eyes:
@@ -594,13 +596,22 @@ async def on_message(message):
             # await message.edit(content=messageholder)
             await message.channel.send(messageholder)
 
-    if str(message.author) == "harrowr#8165":
+    # Test
+    if str(message.author) == "Mokipls#3894":  
+
+    # if str(message.author) == "harrowr#8165":
         global defaultrng
+
+        global lastmessage #spam protection
+        if (lastmessage == message.clean_content):
+            return
+        lastmessage = message.clean_content
+
         randroll = random.randint(1, 100)
         if (randroll > defaultrng):
             # print ("Moca rolao: " + str(randroll) + str(message.content))
             if message.content:
-                if "<@" not in message.content: #User id on discord
+                if "<" not in message.content: #User id on discord
                     if "http" not in message.content:  #Link
                         defaultrng = defaultrng + random.randint(30, 70)
                         await message.author.edit(nick=message.content)
@@ -629,17 +640,16 @@ async def on_voice_state_update(member, before, after):
     current_time = now.strftime("%H:%M:%S")
 
     if(before.channel is None and after.channel is not None):
-        print('Joined the voice: ' + str(member) +
+        print('Server: ' + str(member.guild) + ' Joined the voice: ' + str(member) +
               " Current Time =", current_time)
         # User Joins a voice channel
 
     elif(after.channel is None):
         if before.channel.members:  # check if list members is empty
             randroll = random.randint(1, 100)
-            print('Left the voice:   ' + str(member) +
+            print('Server: ' + str(member.guild) + ' Left the voice:   ' + str(member) +
                   " Current Time = " + str(current_time) + " " + str(randroll))
             voice = get(bot.voice_clients, guild=member.guild)
-
             if (randroll > 80):
                 await asyncio.sleep(1)
                 if member == bot.user:  # check for self
