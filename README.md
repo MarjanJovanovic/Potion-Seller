@@ -6,7 +6,7 @@ movie voting, telling jokes etc.
 
 Available commands:
 
->>> ("**pot**" prefix)
+> ("**pot**" prefix)
 
 **Random**
 (pot)ion, spit, invite 
