@@ -164,20 +164,24 @@ async def movie(ctx):
 @bot.command(name='movielist')
 async def movielist(ctx):
 
-    f = open('./resources/other/movies.txt')
+    f = open('./resources/movies/' + str(ctx.guild) + '.txt')
     lines = f.read().splitlines()
     response = '**Movie list:**\n'
     for i in lines:
         response += ''.join(['> ', i.strip(), '\n'])
     await ctx.send(response)
 
+@movielist.error
+async def movielist_on_error(ctx, error):
+    await ctx.send("No movies added to the list yet. Plese add some movies using the movielist command.")
+
 
 @bot.command(name='movieremove')
 async def movieremove(ctx):
 
-    with open("./resources/other/movies.txt", "r") as f:
+    with open('./resources/movies/' + str(ctx.guild) + '.txt', "r") as f:
         lines = f.readlines()
-    with open("./resources/other/movies.txt", "w") as f:
+    with open('./resources/movies/' + str(ctx.guild) + '.txt', "w") as f:
         for line in lines:
             if str(ctx.message.author) in line.strip("\n"):
                 await ctx.send(line.strip("\n") + " removed!")
@@ -192,7 +196,7 @@ async def movievote(ctx):
 
     global uservotelist
     uservotelist = []
-    f = open('./resources/other/movies.txt')
+    f = open('./resources/movies/' + str(ctx.guild) + '.txt')
     lines = f.read().splitlines()  # linenum
     linenum = 0
     response = "**Movie list:** \n\n"
@@ -253,14 +257,14 @@ async def movievote(ctx):
             firstplacelistindex += 1
 
         emoteid = random.choice(firstplacelist)
-        lines = open('./resources/other/movies.txt').read().splitlines()
+        lines = open('./resources/movies/' + str(ctx.guild) + '.txt').read().splitlines()
         myline = lines[emoteid]
         response = '```First place determined randomly: ' + myline + '```'
         await ctx.send(response)
 
-        with open("./resources/other/movies.txt", "r") as f:
+        with open('./resources/movies/' + str(ctx.guild) + '.txt', "r") as f:
             lines = f.readlines()
-        with open("./resources/other/movies.txt", "w") as f:
+        with open('./resources/movies/' + str(ctx.guild) + '.txt', "w") as f:
             for line in lines:
                 if line.strip("\n") != myline:
                     f.write(line)
@@ -270,14 +274,14 @@ async def movievote(ctx):
         for emotecode, mostvotes in counts.items():
             if maxvote == mostvotes:
                 lines = open(
-                    './resources/other/movies.txt').read().splitlines()
+                    './resources/movies/' + str(ctx.guild) + '.txt').read().splitlines()
                 myline = lines[emoteid]
-                response = '```' + myline + '```'
+                response = 'The winner is:\n```' + myline + '```'
                 await ctx.send(response)
 
-                with open("./resources/other/movies.txt", "r") as f:
+                with open('./resources/movies/' + str(ctx.guild) + '.txt', "r") as f:
                     lines = f.readlines()
-                with open("./resources/other/movies.txt", "w") as f:
+                with open('./resources/movies/' + str(ctx.guild) + '.txt', "w") as f:
                     for line in lines:
                         if line.strip("\n") != myline:
                             f.write(line)
@@ -288,13 +292,16 @@ async def movievote(ctx):
 @bot.command(name='movieadd')
 async def movieadd(ctx, text):
 
-    with open('./resources/other/movies.txt') as f:
+    with open('./resources/movies/' + str(ctx.guild) + '.txt') as f:
+        print ("passed 1")
         if str(ctx.message.author) in f.read():
+            print ("passed 2")
+
             await ctx.send("You have already suggested a movie!")
             f.close()
             return
 
-    f = open('./resources/other/movies.txt', "a+")
+    f = open('./resources/movies/' + str(ctx.guild) + '.txt', "a+")
 
     f.write(str(ctx.message.author) + " -- " + text + "\n")
     f.close
@@ -303,14 +310,14 @@ async def movieadd(ctx, text):
 
 @bot.command(name='movierandom')
 async def movierandom(ctx):
-    lines = open('./resources/other/movies.txt').read().splitlines()
+    lines = open('./resources/movies/' + str(ctx.guild) + '.txt').read().splitlines()
     myline = random.choice(lines)
     response = '```' + myline + '```'
     await ctx.send(response)
 
-    with open("./resources/other/movies.txt", "r") as f:
+    with open('./resources/movies/' + str(ctx.guild) + '.txt', "r") as f:
         lines = f.readlines()
-    with open("./resources/other/movies.txt", "w") as f:
+    with open('./resources/movies/' + str(ctx.guild) + '.txt', "w") as f:
         for line in lines:
             if line.strip("\n") != myline:
                 f.write(line)
@@ -597,9 +604,9 @@ async def on_message(message):
             await message.channel.send(messageholder)
 
     # Test
-    if str(message.author) == "Mokipls#3894":  
+    # if str(message.author) == "Mokipls#3894":  
 
-    # if str(message.author) == "harrowr#8165":
+    if str(message.author) == "harrowr#8165":
         global defaultrng
 
         global lastmessage #spam protection
