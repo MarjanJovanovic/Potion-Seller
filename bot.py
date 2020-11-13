@@ -30,9 +30,11 @@ async def spit(ctx, at):
     response = 'You spit at ' + at
     await ctx.send(response)
 
+
 @spit.error
 async def spit_on_error(ctx, error):
     await ctx.send("Invalid arguments. The correct arguments are: \n`potspit NAME`")
+
 
 @bot.command(name='ion')
 async def ion(ctx):
@@ -57,6 +59,7 @@ async def invite(ctx):
     await ctx.send(response)
 
 # Provale
+
 
 @bot.command(name='acim')
 async def acim(ctx):
@@ -129,12 +132,14 @@ async def moki(ctx):
     response = myline
     await ctx.send(response)
 
+
 @bot.command(name='ogi')
 async def ogi(ctx):
     lines = open('./resources/provale/ogi.txt').read().splitlines()
     myline = random.choice(lines)
     response = myline
     await ctx.send(response)
+
 
 @bot.command(name='zalba')
 async def zalba(ctx):
@@ -150,6 +155,52 @@ async def zalba(ctx):
         await ctx.send("De si be Awerone")
     else:
         await ctx.send("Nemoj molim te, nemoj molim te, nemoj molim te.")
+
+
+@bot.command(name='vote')
+async def vote(ctx):
+    defaultTimeout = 30.0
+    msgauthor = ctx.message.author
+    answers = []
+
+    def isSameUser(m):
+        # print(str(m.content))
+        # if m.content == "done":
+        #     return False
+        print("Same author: " + str(m.author == msgauthor))
+        return m.author == msgauthor
+
+    # await message.channel.send('Type out a question:')
+    # msg = await bot.wait_for('message', check=isSameUser, timeout=5.0)
+    # await message.channel.send("test")
+
+    await ctx.channel.send('Type out a question:')
+    question = await bot.wait_for('message', check=isSameUser, timeout=5.0)
+
+    while True:
+        await ctx.channel.send('Type out an answer:')
+        await bot.wait_for('message', check=isSameUser, timeout=5.0)
+        answers.append(ctx.message.content)
+        print("proso: " + str(len(answers)))
+        print("currmsg: " + ctx.message.content)
+        print("currList: ")
+        print(answers)
+        if ctx.message.content == "done":
+            return False
+        # if 'done' in message.content.lower():
+        #     return
+    print("final done")
+# @bot.event
+# async def on_message(message):
+#     if message.content.startswith('$greet'):
+#         channel = message.channel
+#         await channel.send('Say hello!')
+
+#         def check(m):
+#             return m.content == 'hello' and m.channel == channel
+
+#         msg = await bot.wait_for('message', check=check)
+#         await channel.send('Hello {.author}!'.format(msg))
 
 
 # Movies
@@ -170,6 +221,7 @@ async def movielist(ctx):
     for i in lines:
         response += ''.join(['> ', i.strip(), '\n'])
     await ctx.send(response)
+
 
 @movielist.error
 async def movielist_on_error(ctx, error):
@@ -257,7 +309,8 @@ async def movievote(ctx):
             firstplacelistindex += 1
 
         emoteid = random.choice(firstplacelist)
-        lines = open('./resources/movies/' + str(ctx.guild) + '.txt').read().splitlines()
+        lines = open('./resources/movies/' + str(ctx.guild) +
+                     '.txt').read().splitlines()
         myline = lines[emoteid]
         response = '```First place determined randomly: ' + myline + '```'
         await ctx.send(response)
@@ -293,9 +346,9 @@ async def movievote(ctx):
 async def movieadd(ctx, text):
 
     with open('./resources/movies/' + str(ctx.guild) + '.txt') as f:
-        print ("passed 1")
+        print("passed 1")
         if str(ctx.message.author) in f.read():
-            print ("passed 2")
+            print("passed 2")
 
             await ctx.send("You have already suggested a movie!")
             f.close()
@@ -310,7 +363,8 @@ async def movieadd(ctx, text):
 
 @bot.command(name='movierandom')
 async def movierandom(ctx):
-    lines = open('./resources/movies/' + str(ctx.guild) + '.txt').read().splitlines()
+    lines = open('./resources/movies/' + str(ctx.guild) +
+                 '.txt').read().splitlines()
     myline = random.choice(lines)
     response = '```' + myline + '```'
     await ctx.send(response)
@@ -579,7 +633,7 @@ async def on_message(message):
         emoji = discord.utils.get(message.guild.emojis, name='momcilo')
         if emoji:
             await message.add_reaction(emoji)
-    if 'potkodjen' in message.clean_content.lower():  #Kodjen
+    if 'potkodjen' in message.clean_content.lower():  # Kodjen
         emoji = discord.utils.get(message.guild.emojis, name='astor')
         if emoji:
             await message.add_reaction(emoji)
@@ -604,12 +658,12 @@ async def on_message(message):
             await message.channel.send(messageholder)
 
     # Test
-    # if str(message.author) == "Mokipls#3894":  
+    # if str(message.author) == "Mokipls#3894":
 
     if str(message.author) == "harrowr#8165":
         global defaultrng
 
-        global lastmessage #spam protection
+        global lastmessage  # spam protection
         if (lastmessage == message.clean_content):
             return
         lastmessage = message.clean_content
@@ -618,8 +672,8 @@ async def on_message(message):
         if (randroll > defaultrng):
             # print ("Moca rolao: " + str(randroll) + str(message.content))
             if message.content:
-                if "<" not in message.content: #User id on discord
-                    if "http" not in message.content:  #Link
+                if "<" not in message.content:  # User id on discord
+                    if "http" not in message.content:  # Link
                         defaultrng = defaultrng + random.randint(30, 70)
                         await message.author.edit(nick=message.content)
         else:
