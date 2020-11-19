@@ -526,7 +526,11 @@ async def leave(ctx):
     await asyncio.sleep(3)
     guild = ctx.message.guild.voice_client
     await guild.disconnect()
-    await ctx.send("Bot left the voice channel.")
+    msg = await ctx.send("Bot left the voice channel.")
+
+    await asyncio.sleep(20)
+    await ctx.message.delete(delay=5)
+    await msg.delete(delay=5)
 
 ##################################################
 
