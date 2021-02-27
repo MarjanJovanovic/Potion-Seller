@@ -12,7 +12,7 @@ from discord.ext import commands
 from discord import FFmpegPCMAudio
 from discord.utils import get
 from discord.ext.commands import CommandNotFound
-
+import logging
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -23,6 +23,15 @@ bot = commands.Bot(command_prefix='pot')
 votemsgid = 123  # placeholder
 defaultrng = 80
 lastmessage = "placeholder message"
+leaveChance = 80
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(
+    filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 
 @bot.command(name='spit')
@@ -179,7 +188,7 @@ async def vote(ctx):
 
     while True:
         await ctx.channel.send('Type out an answer:')
-        await bot.wait_for('message', check=isSameUser, timeout=5.0)
+        await bot.wait_for('', check=isSameUser, timeout=5.0)
         answers.append(ctx.message.content)
         print("proso: " + str(len(answers)))
         print("currmsg: " + ctx.message.content)
@@ -190,18 +199,6 @@ async def vote(ctx):
         # if 'done' in message.content.lower():
         #     return
     print("final done")
-# @bot.event
-# async def on_message(message):
-#     if message.content.startswith('$greet'):
-#         channel = message.channel
-#         await channel.send('Say hello!')
-
-#         def check(m):
-#             return m.content == 'hello' and m.channel == channel
-
-#         msg = await bot.wait_for('message', check=check)
-#         await channel.send('Hello {.author}!'.format(msg))
-
 
 # Movies
 
@@ -414,7 +411,7 @@ async def deathroll(ctx, num, gold, name1, name2):
 
 @deathroll.error
 async def deathroll_on_error(ctx, error):
-    await ctx.send("Invalid arguments. The correct arguments are: \n`potdeathroll NUMBER GOLD NAME1 NAME2`")
+    await ctx.send("Invalid arguments. The correct arguments are: \n`potdeathroll ROLL_NUMBER GOLD_AMMOUNT NAME_1 NAME_2`")
 
 # Sounds
 
@@ -696,6 +693,36 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
+    if message.content.startswith('potgreet'):  # waiting example
+        channel = message.channel
+        await channel.send('Say hello!')
+
+        def check(m):
+            return m.content == 'hello' and m.channel == channel
+
+        msg = await bot.wait_for('message', check=check)
+        await channel.send('Hello {.author}!'.format(msg))
+
+    if message.content.startswith('potcreateevent'):  # waiting example
+        channel = message.channel
+        author = message.author
+        await channel.send('Input the event name')
+        eventName = await bot.wait_for('message')
+
+        await channel.send("Input the number of minutes until the event is starting: ")
+        eventTimeStr = await bot.wait_for('message')
+        eventTime = int(eventTimeStr.content)
+        eventTime = eventTime * 60  # sec to min
+        # eventName = await bot.wait_for('message')
+        await channel.send("Event created: " + eventName.content + " by: " + author.name + " starting in: " + str(eventTime/60) + " minutes...")
+        await asyncio.sleep(eventTime)
+        await channel.send("Event created: " + eventName.content + " by: " + author.name + " is starting now!")
+
+
+@bot.command(name='createevent')
+async def createevent(ctx):
+    return
+
 # Voice leave
 
 
@@ -710,12 +737,14 @@ async def on_voice_state_update(member, before, after):
         # User Joins a voice channel
 
     elif(after.channel is None):
+        # print('left')
         if before.channel.members:  # check if list members is empty
+            # print('empty channel')
             randroll = random.randint(1, 100)
             print('Server: ' + str(member.guild) + ' Left the voice:   ' + str(member) +
                   " Current Time = " + str(current_time) + " " + str(randroll))
             voice = get(bot.voice_clients, guild=member.guild)
-            if (randroll > 80):
+            if (randroll > leaveChance):
                 await asyncio.sleep(1)
                 if member == bot.user:  # check for self
                     return
