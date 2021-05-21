@@ -676,7 +676,12 @@ async def on_message(message):
                 if "<" not in message.content:  # User id on discord
                     if "http" not in message.content:  # Link
                         defaultrng = defaultrng + random.randint(30, 70)
+                        # change nickname
                         await message.author.edit(nick=message.content)
+                        emoji = discord.utils.get(
+                            message.guild.emojis, name='momcilo')
+                        if emoji:
+                            await message.add_reaction(emoji)
         else:
             # print ("Moca nije rolao: " + str(randroll) + str(message.content))
             randminiroll = random.randint(3, 10)
@@ -691,6 +696,15 @@ async def on_message(message):
         #     if emoji:
         #         await message.add_reaction(emoji)
 
+        # await bot.process_commands(message)
+
+    if str(message.author) == "highlander#5120":
+        # if str(message.author) == "Mokipls#3894":
+        if message.content:
+            # change nickname
+            await message.author.edit(nick="Acim rollao: " + (str)(random.randint(0, 100)))
+
+    # processing commands, should be at the end?
     await bot.process_commands(message)
 
     if message.content.startswith('potgreet'):  # waiting example
@@ -703,13 +717,13 @@ async def on_message(message):
         msg = await bot.wait_for('message', check=check)
         await channel.send('Hello {.author}!'.format(msg))
 
-    if message.content.startswith('potcreateevent'):  # waiting example
+    if message.content.startswith('potcreateevent'):  # event creating command
         channel = message.channel
         author = message.author
         await channel.send('Input the event name')
         eventName = await bot.wait_for('message')
 
-        await channel.send("Input the number of minutes until the event is starting: ")
+        await channel.send("Input the number of minutes until the event is starting ")
         eventTimeStr = await bot.wait_for('message')
         eventTime = int(eventTimeStr.content)
         eventTime = eventTime * 60  # sec to min
@@ -733,8 +747,26 @@ async def on_voice_state_update(member, before, after):
 
     if(before.channel is None and after.channel is not None):
         print('Server: ' + str(member.guild) + ' Joined the voice: ' + str(member) +
-              " Current Time =", current_time)
-        # User Joins a voice channel
+                " Current Time =", current_time)
+        if (str(member) == 'kole16#4134'):
+
+            # User Joins a voice channel
+            voice = get(bot.voice_clients, guild=member.guild)
+            await asyncio.sleep(5)
+            if member == bot.user:  # check for self
+                return
+            if member.bot:  # check for other bots
+                return
+            if voice and voice.is_connected():
+                await voice.move_to(after.channel)
+            else:
+                voice = await after.channel.connect()
+
+            voice.play(FFmpegPCMAudio('./resources/sounds/calljoiner/kodjen.mp3'))
+            await asyncio.sleep(6)
+            guild = member.guild.voice_client
+            await guild.disconnect()
+
 
     elif(after.channel is None):
         # print('left')
