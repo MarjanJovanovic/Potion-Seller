@@ -23,7 +23,7 @@ bot = commands.Bot(command_prefix='pot')
 votemsgid = 123  # placeholder
 defaultrng = 80
 lastmessage = "placeholder message"
-leaveChance = 80
+leaveChance = 70
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -761,9 +761,29 @@ async def on_voice_state_update(member, before, after):
                 await voice.move_to(after.channel)
             else:
                 voice = await after.channel.connect()
+            await asyncio.sleep(1)
 
             voice.play(FFmpegPCMAudio('./resources/sounds/calljoiner/kodjen.mp3'))
-            await asyncio.sleep(6)
+            await asyncio.sleep(7)
+            guild = member.guild.voice_client
+            await guild.disconnect()
+
+        if (str(member) == 'BABLIBOYBBB#3809'):
+
+            # User Joins a voice channel
+            voice = get(bot.voice_clients, guild=member.guild)
+            await asyncio.sleep(1)
+            if member == bot.user:  # check for self
+                return
+            if member.bot:  # check for other bots
+                return
+            if voice and voice.is_connected():
+                await voice.move_to(after.channel)
+            else:
+                voice = await after.channel.connect()
+            await asyncio.sleep(1)
+            voice.play(FFmpegPCMAudio('./resources/sounds/calljoiner/bubbly.mp3'))
+            await asyncio.sleep(10)
             guild = member.guild.voice_client
             await guild.disconnect()
 
@@ -786,10 +806,10 @@ async def on_voice_state_update(member, before, after):
                     await voice.move_to(before.channel)
                 else:
                     voice = await before.channel.connect()
-
+                await asyncio.sleep(1)
                 voice.play(FFmpegPCMAudio('./resources/sounds/callleaver/' +
                                           random.choice(os.listdir('./resources/sounds/callleaver/'))))
-                await asyncio.sleep(6)
+                await asyncio.sleep(10)
                 guild = member.guild.voice_client
                 await guild.disconnect()
 
