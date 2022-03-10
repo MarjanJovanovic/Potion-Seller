@@ -32,13 +32,13 @@ ispalaadd, acimadd, lazkeadd, mocaadd
 
 # Required modules:
 
-**Discord.py**
+**Discord.py**  
 >py -3 -m pip install -U discord.py  
-**Requests**
+**Requests**  
 >pip install requests  
-**Dotenv**
+**Dotenv**  
 >python -m pip install python-dotenvg  
-**PyNaCl**
+**PyNaCl**  
 >pip install pynacl  
-**Ffmpeg**
+**Ffmpeg**  
 >https://www.thewindowsclub.com/how-to-install-ffmpeg-on-windows-10  
