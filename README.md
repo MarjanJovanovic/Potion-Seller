@@ -35,11 +35,15 @@ ispalaadd, acimadd, lazkeadd, mocaadd
 
 --- Discord.py ---
 py -3 -m pip install -U discord.py
+
 --- Requests ---
 pip install requests
+
 --- Dotenv ---
 python -m pip install python-dotenvg
+
 --- PyNaCl ---
 pip install pynacl
+
 --- Ffmpeg ---
 https://www.thewindowsclub.com/how-to-install-ffmpeg-on-windows-10
