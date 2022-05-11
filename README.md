@@ -30,16 +30,24 @@ movie, movielist, movieadd "moviename", movieremove, movievote, mocierandom
 ispala, acim, lazke, moca, moki, ogi
 ispalaadd, acimadd, lazkeadd, mocaadd 
 
-
 # Required modules:
 
---- Discord.py ---
-py -3 -m pip install -U discord.py
---- Requests ---
-pip install requests
---- Dotenv ---
-python -m pip install python-dotenvg
---- PyNaCl ---
-pip install pynacl
---- Ffmpeg ---
-https://www.thewindowsclub.com/how-to-install-ffmpeg-on-windows-10
+**Discord.py**  
+
+>py -3 -m pip install -U discord.py  
+
+**Requests**  
+
+>pip install requests
+  
+**Dotenv**  
+
+>python -m pip install python-dotenvg  
+
+**PyNaCl**  
+
+>pip install pynacl  
+
+**Ffmpeg**  
+
+>https://www.thewindowsclub.com/how-to-install-ffmpeg-on-windows-10  
