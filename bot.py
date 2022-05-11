@@ -1,4 +1,6 @@
+from ast import match_case
 import os
+from tokenize import String
 import discord
 import random
 import asyncio
@@ -152,7 +154,7 @@ async def ogi(ctx):
 
 @bot.command(name='zalba')
 async def zalba(ctx):
-    if str(ctx.message.author) == "mokipls#3894":
+    if str(ctx.message.author) == "mokipls#3810":
         await ctx.send("I bow to your will")
     elif str(ctx.message.author) == "harrowr#8165":
         await ctx.send("...")
@@ -659,9 +661,12 @@ async def on_message(message):
             await message.channel.send(messageholder)
 
     # Test
-    # if str(message.author) == "Mokipls#3894":
+    # if str(message.author) == "Mokipls#3810":
+    
+    if str(message.author) == "Schmeiser#3016":
+        await message.add_reaction('🍁')
 
-    if str(message.author) == "harrowr#8165":
+    if str(message.author) == "harrowr#8165": #rename user to his sent message by random
         global defaultrng
 
         global lastmessage  # spam protection
@@ -699,7 +704,7 @@ async def on_message(message):
         # await bot.process_commands(message)
 
     if str(message.author) == "highlander#5120":
-        # if str(message.author) == "Mokipls#3894":
+        # if str(message.author) == "Mokipls#3810":
         if message.content:
             # change nickname
             await message.author.edit(nick="Acim rollao: " + (str)(random.randint(0, 100)))
@@ -707,15 +712,15 @@ async def on_message(message):
     # processing commands, should be at the end?
     await bot.process_commands(message)
 
-    if message.content.startswith('potgreet'):  # waiting example
+    if message.content.startswith('potgreet'):
         channel = message.channel
-        await channel.send('Say hello!')
+        author = str(message.author)
 
-        def check(m):
-            return m.content == 'hello' and m.channel == channel
+        # await channel.send('Say hello!')  #wait for message
+        # msg = await bot.wait_for('message')
 
-        msg = await bot.wait_for('message', check=check)
-        await channel.send('Hello {.author}!'.format(msg))
+        await channel.send('Hello ' + author[:-5] + '!')
+
 
     if message.content.startswith('potcreateevent'):  # event creating command
         channel = message.channel
@@ -845,5 +850,45 @@ async def on_reaction_add(reaction, user):
 # @bot.command(name='meme_templates')
 # async def meme(ctx):
 #     await ctx.send('https://api.imgflip.com/popular_meme_ids')
+
+@bot.command(name='calculatetime')
+async def timecalculator(ctx):
+    await ctx.send("Input the time in hours") 
+    msg = await bot.wait_for('message')
+    inputtime = msg.content
+    await ctx.send("With that ammount of time you can:") 
+    
+
+@bot.command(name='insteadofwow')
+async def timecalculator(ctx):
+    await ctx.send("Wondering what else to spend time on instead of WoW?\nChoose an expansion: \n1. Classic\n2. TBC\n3. Shadowlands") 
+    msg = await bot.wait_for('message')
+    await ctx.send(">>> With that ammount of time you can play:\n" + expansioncalculator(int(msg.content))) 
+
+def expansioncalculator(i):
+    match i:
+        #classic
+        case 1:
+            i = 170
+        #tbc
+        case 2:
+            i = 200
+        #shadowlands
+        case 3:
+            i = 30
+
+        #error
+        case _: return "nothing, you inputed a wrong value ._."
+        
+    #avg game time in hours
+    rocketLeagueTime = 0.166667
+    fortniteTime = 0.333
+    dotaTime = 1
+    lolTime = 0.5
+
+    calculatedString = "```json\n" + str(int(i/rocketLeagueTime)) + " Rocket League games\n" + str(int(i/fortniteTime)) + " Fortnite games\n" + str(int(i/lolTime)) + " LoL games\n" + str(int(i/dotaTime))  + " DotA games\n"  + "```"
+
+    return calculatedString
+
 
 bot.run(token)
