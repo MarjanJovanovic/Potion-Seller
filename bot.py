@@ -8,6 +8,7 @@ import time
 import requests
 import json
 from datetime import datetime
+from datetime import timedelta
 from datetime import date
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -56,6 +57,7 @@ async def ion(ctx):
     response = myline
     await ctx.send(response)
 
+
 bot.remove_command("help")
 
 
@@ -70,6 +72,7 @@ async def help(ctx):
 async def invite(ctx):
     response = 'To invite bot to your server use this link:\nhttps://discordapp.com/api/oauth2/authorize?client_id=663812740594401317&permissions=8&scope=bot'
     await ctx.send(response)
+
 
 # Provale
 
@@ -204,6 +207,7 @@ async def vote(ctx):
         #     return
     print("final done")
 
+
 # Movies
 
 
@@ -215,7 +219,6 @@ async def movie(ctx):
 
 @bot.command(name='movielist')
 async def movielist(ctx):
-
     f = open('./resources/movies/' + str(ctx.guild) + '.txt')
     lines = f.read().splitlines()
     response = '**Movie list:**\n'
@@ -231,7 +234,6 @@ async def movielist_on_error(ctx, error):
 
 @bot.command(name='movieremove')
 async def movieremove(ctx):
-
     with open('./resources/movies/' + str(ctx.guild) + '.txt', "r") as f:
         lines = f.readlines()
     with open('./resources/movies/' + str(ctx.guild) + '.txt', "w") as f:
@@ -244,7 +246,6 @@ async def movieremove(ctx):
 
 @bot.command(name='movievote')
 async def movievote(ctx):
-
     delayseconds = 30
 
     global uservotelist
@@ -264,7 +265,8 @@ async def movievote(ctx):
                  '🕔', '🕕', '🕖', '🕗', '🕘', '🕙'][:linenum]
     # lines = open('./resources/other/movies.txt').read().splitlines()
 
-    msg = await ctx.send(response + "\n**React** to add a vote !\nTime remaining to vote: **~ " + str(delayseconds) + " seconds.**")
+    msg = await ctx.send(
+        response + "\n**React** to add a vote !\nTime remaining to vote: **~ " + str(delayseconds) + " seconds.**")
     msgid = msg.id
     global votemsgid
     votemsgid = msgid
@@ -272,7 +274,7 @@ async def movievote(ctx):
         await msg.add_reaction(i)
 
     offset = 12  # offset the number by a couple of seconds
-    randomoffset = random.randint(0, offset) - int(offset/2)
+    randomoffset = random.randint(0, offset) - int(offset / 2)
     print(randomoffset)
     if randomoffset > 0:
         # delay before getting the votes
@@ -345,7 +347,6 @@ async def movievote(ctx):
 
 @bot.command(name='movieadd')
 async def movieadd(ctx, text):
-
     with open('./resources/movies/' + str(ctx.guild) + '.txt') as f:
         print("passed 1")
         if str(ctx.message.author) in f.read():
@@ -415,7 +416,9 @@ async def deathroll(ctx, num, gold, name1, name2):
 
 @deathroll.error
 async def deathroll_on_error(ctx, error):
-    await ctx.send("Invalid arguments. The correct arguments are: \n`potdeathroll ROLL_NUMBER GOLD_AMOUNT NAME_1 NAME_2`")
+    await ctx.send(
+        "Invalid arguments. The correct arguments are: \n`potdeathroll ROLL_NUMBER GOLD_AMOUNT NAME_1 NAME_2`")
+
 
 # Sounds
 
@@ -425,7 +428,6 @@ async def deathroll_on_error(ctx, error):
     pass_context=True,
 )
 async def play(ctx, filename):
-
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
@@ -463,6 +465,7 @@ async def play(ctx, filename):
     guild = ctx.message.guild.voice_client
     await guild.disconnect()
 
+
 # @play.error
 # async def play_error(ctx, error):
 #     # await ctx.send(error)
@@ -474,7 +477,6 @@ async def play(ctx, filename):
     pass_context=True,
 )
 async def playcrusader(ctx):
-
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
@@ -499,6 +501,7 @@ async def playcrusader(ctx):
 
     guild = ctx.message.guild.voice_client
     await guild.disconnect()
+
 
 bot.remove_command("playhelp")
 
@@ -533,6 +536,7 @@ async def leave(ctx):
     await ctx.message.delete(delay=5)
     await msg.delete(delay=5)
 
+
 ##################################################
 
 
@@ -548,45 +552,6 @@ async def timer(ctx, min):
 @timer.error
 async def timer_on_error(ctx, error):
     await ctx.send("Invalid arguments. The correct arguments are: \n`pottimer NUMBER(minutes)`")
-
-##################################################
-# command template
-# @bot.command(name='')
-# async def (ctx):
-#     response = ''
-#     await ctx.send(response)
-
-##################################################
-
-
-@bot.event
-async def on_ready():
-    print(f'{bot.user} has connected to Discord!')
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game("Brewing potions...  Type \"pothelp\" to see the available commands"))
-    print('bot id:' + str(bot.user.id))
-    if bot.user.id == 663812740594401317:
-        bot.dev = True
-    else:
-        bot.dev = False
-
-
-@bot.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(
-        f'Well met {member.name}. Welcome to ' + str(member.guild) + '!')
-
-
-############### Memes ###############
-
-@bot.command(name='drakememe')
-async def drakememe(ctx, caption0: str, caption1: str):
-    url = 'https://api.imgflip.com/caption_image'
-    params = dict(template_id=181913649, username=acc_username,
-                  password=acc_password, text0=caption0, text1=caption1)
-    res = requests.get(url, params=params)
-
-    data = res.json()
 
     print("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
           "\nMeme: " + str(data['data']['url']))
@@ -611,32 +576,120 @@ async def lazarmeme(ctx, caption1: str):
 
     await ctx.send(data['data']['url'])
 
+
 ##################################################
 
+finalists = ['🇨🇿', '🇷🇴', '🇵🇹', '🇫🇮', '🇨🇭', '🇫🇷', '🇳🇴', '🇦🇲', '🇮🇹', '🇪🇸', '🇳🇱', '🇺🇦',
+             '🇩🇪', '🇱🇹', '🇦🇿', '🇧🇪', '🇬🇷', '🇮🇸', '🇲🇩', '🇸🇪', '🇦🇺', '🇬🇧', '🇵🇱', '🇷🇸',
+             '🇪🇪']
 
 @bot.event
 async def on_message(message):
+    global finalists
+
     if message.author == bot.user:
         return
     msg = str(message.clean_content.lower())  # string holder
+
     if isinstance(message.channel, discord.DMChannel):
-        if (message.clean_content.lower() == "euro"):
-            await message.author.send('Euro?')
-            
-        elif (str(message.clean_content.lower()).isdigit()):
-            await message.author.send('Ok')
-            pointsList = []
-            global loopCounter
-            while loopCounter < 10:
-                await message.author.send('Who would you like to give ' + str(loopCounter + 1) + 'points?')
-                newmsg = await bot.wait_for('message')
-                pointsList.append (newmsg)
-                loopCounter = loopCounter + 1
-            await message.author.send('Final list: ' + pointsList)
-            return
-        else:    
-            await message.author.send('???')
-            return
+        author = message.author
+        await message.author.send('Ok')
+
+        allowed_reactions = set(finalists)
+
+        voting_start_time = datetime.now()
+
+        voting_messages = []
+        voting_options = [12, 10, 8, 7, 6, 5, 4, 3, 2, 1]
+        for i in voting_options:
+            await message.author.send('⠀\nWho would you like to give ' + str(i) + 'points?')
+
+            first_msg = await message.author.send('⠀')
+            for flag in finalists[:13]:
+                await first_msg.add_reaction(flag)
+
+            second_msg = await message.author.send('⠀')
+            for flag in finalists[13:]:
+                await second_msg.add_reaction(flag)
+
+            voting_messages.append({
+                "points": i,
+                "messages": [first_msg.id, second_msg.id]
+            })
+            await asyncio.sleep(2)
+
+        done_msg = await message.author.send('Done?')
+        await done_msg.add_reaction('✅')
+
+        # Check if voting has finished
+
+        votes = {}
+        votes_to_submit = {}
+        while voting_start_time < voting_start_time + timedelta(minutes=5):
+            votes = {}
+            for vote_msgs in voting_messages:
+                points = vote_msgs.get("points")
+                first_group, second_group = vote_msgs.get("messages")
+                first_group = await message.channel.fetch_message(first_group)
+                second_group = await message.channel.fetch_message(second_group)
+
+                first_group_votes = list(filter(lambda x: x.count > 1, first_group.reactions))
+                second_group_votes = list(filter(lambda x: x.count > 1, second_group.reactions))
+
+                if not first_group_votes and not second_group_votes:
+                    continue
+
+                if len(first_group_votes) + len(second_group_votes) > 1:
+                    await message.author.send(f'Please select only one option for {points} points')
+                    await asyncio.sleep(1)
+                    continue
+
+                voted_for = [*first_group_votes, *second_group_votes][0]
+
+                if str(voted_for) not in allowed_reactions:
+                    await message.author.send(f'You cannot vote for {voted_for}...')
+                    await asyncio.sleep(1)
+                    continue
+
+                if votes.get(voted_for):
+                    await message.author.send(f'You can only give one point to a country: {voted_for}')
+                    await asyncio.sleep(1)
+                    continue
+
+                votes[str(voted_for)] = points
+
+            is_done_msg = await message.channel.fetch_message(done_msg.id)
+            is_done = is_done_msg.reactions and is_done_msg.reactions[0].count > 1
+            if is_done:
+                votes_to_submit = votes
+                break
+
+            await asyncio.sleep(1)
+
+        if len(votes_to_submit) == len(voting_options):
+            print(f"{author.name} voted: {votes}")
+            votes = votes_to_submit
+            await author.send('Voting finished, calculating and submitting votes...')
+
+            msg_str = "\n"
+            for voted_for, points in votes.items():
+                msg_str += f"{voted_for}: {points}\n"
+
+            await author.send(f'Your votes: {msg_str}')
+            with open(f'./resources/eurovision/votes/{author.name}.json', 'w+') as votes_file:
+                votes_file.write(json.dumps(votes))
+            await author.send("Successfully submitted")
+
+        # pointsList = []
+        # global loopCounter
+        # while loopCounter < 10:
+        #     await message.author.send('Who would you like to give ' + str(loopCounter + 1) + 'points?')
+        #     newmsg = await bot.wait_for('message')
+        #     pointsList.append(newmsg)
+        #     loopCounter = loopCounter + 1
+        # await message.author.send('Final list: ' + pointsList)
+        return
+
     # if bot.dev and not await bot.is_owner(message.author): #always returns for any user
     #     return
 
@@ -680,11 +733,11 @@ async def on_message(message):
 
     # Test
     # if str(message.author) == "Mokipls#3810":
-    
+
     if str(message.author) == "Schmeiser#3016":
         await message.add_reaction('🍁')
 
-    if str(message.author) == "harrowr#8165": #rename user to his sent message by random
+    if str(message.author) == "harrowr#8165":  # rename user to his sent message by random
         global defaultrng
 
         global lastmessage  # spam protection
@@ -714,12 +767,12 @@ async def on_message(message):
     #     print ("ima")
     # emokilist = list(message.guild.emojis())
 
-        # if emokilist[emojis] in message.clean_content.lower():
-        #     emoji = discord.utils.get(message.guild.emojis, name=emojis)
-        #     if emoji:
-        #         await message.add_reaction(emoji)
+    # if emokilist[emojis] in message.clean_content.lower():
+    #     emoji = discord.utils.get(message.guild.emojis, name=emojis)
+    #     if emoji:
+    #         await message.add_reaction(emoji)
 
-        # await bot.process_commands(message)
+    # await bot.process_commands(message)
 
     if str(message.author) == "highlander#5120":
         # if str(message.author) == "Mokipls#3810":
@@ -739,7 +792,6 @@ async def on_message(message):
 
         await channel.send('Hello ' + author[:-5] + '!')
 
-
     if message.content.startswith('potcreateevent'):  # event creating command
         channel = message.channel
         author = message.author
@@ -751,7 +803,8 @@ async def on_message(message):
         eventTime = int(eventTimeStr.content)
         eventTime = eventTime * 60  # sec to min
         # eventName = await bot.wait_for('message')
-        await channel.send("Event created: " + eventName.content + " by: " + author.name + " starting in: " + str(eventTime/60) + " minutes...")
+        await channel.send("Event created: " + eventName.content + " by: " + author.name + " starting in: " + str(
+            eventTime / 60) + " minutes...")
         await asyncio.sleep(eventTime)
         await channel.send("Event created: " + eventName.content + " by: " + author.name + " is starting now!")
 
@@ -759,6 +812,7 @@ async def on_message(message):
 @bot.command(name='createevent')
 async def createevent(ctx):
     return
+
 
 # Voice leave
 
@@ -768,9 +822,9 @@ async def on_voice_state_update(member, before, after):
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
 
-    if(before.channel is None and after.channel is not None):
+    if (before.channel is None and after.channel is not None):
         print('Server: ' + str(member.guild) + ' Joined the voice: ' + str(member) +
-                " Current Time =", current_time)
+              " Current Time =", current_time)
         if (str(member) == 'kole16#4134'):
 
             # User Joins a voice channel
@@ -811,7 +865,7 @@ async def on_voice_state_update(member, before, after):
             await guild.disconnect()
 
 
-    elif(after.channel is None):
+    elif (after.channel is None):
         # print('left')
         if before.channel.members:  # check if list members is empty
             # print('empty channel')
@@ -837,6 +891,29 @@ async def on_voice_state_update(member, before, after):
                 await guild.disconnect()
 
 
+# @bot.event
+# async def on_raw_reaction_add(payload):
+#     if payload.member != None:
+#         return
+#     # print(payload)
+#     author = await bot.fetch_user(payload.user_id)
+#     if author.bot:
+#         return
+#
+#     channel = await bot.fetch_channel(payload.channel_id)
+#     message = await channel.fetch_message(payload.message_id)
+#
+#     for reaction in message.reactions:
+#         if reaction.count > 1:
+#             print("found", reaction)
+#             await message.remove_reaction(reaction, author)
+#
+#     emoji_to_add = payload.emoji.name
+#     await message.add_reaction(emoji_to_add)
+#     print(author, type(author))
+#     # currmsg = discord.utils.get(await currchannel.history(limit=100).flatten(), name=author)
+
+
 @bot.event
 async def on_reaction_add(reaction, user):
     global votemsgid
@@ -845,11 +922,12 @@ async def on_reaction_add(reaction, user):
     if reaction.message.id == votemsgid:
         if user == bot.user:  # check for self
             return
-        elif uservotelist.count(user) > maxvotes-1:
+        elif uservotelist.count(user) > maxvotes - 1:
             await reaction.message.remove_reaction(reaction, user)
             await reaction.message.channel.send("<@" + str(user.id) + "> " + "you have already voted! Stop spamming!")
         else:
             uservotelist.append(user)
+
 
 # @bot.command(name='meme')
 # async def meme(ctx, template_id: int, caption0: str, caption1: str):
@@ -871,44 +949,53 @@ async def on_reaction_add(reaction, user):
 
 @bot.command(name='insteadofwow')
 async def timecalculator(ctx):
-    await ctx.send("Wondering what else to spend time on instead of WoW?\nChoose an expansion: \n1. Classic\n2. TBC\n3. Shadowlands") 
+    await ctx.send(
+        "Wondering what else to spend time on instead of WoW?\nChoose an expansion: \n1. Classic\n2. TBC\n3. Shadowlands")
     msg = await bot.wait_for('message')
-    await ctx.send(">>> With that amount of time it would take you to level 1 character to max level, you can play:\n" + expansioncalculator(int(msg.content))) 
+    await ctx.send(
+        ">>> With that amount of time it would take you to level 1 character to max level, you can play:\n" + expansioncalculator(
+            int(msg.content)))
+
 
 def expansioncalculator(i):
     match i:
-        #classic
+        # classic
         case 1:
             i = 170
-        #tbc
+        # tbc
         case 2:
             i = 200
-        #shadowlands
+        # shadowlands
         case 3:
             i = 30
 
-        #error
-        case _: return "nothing, you inputed a wrong value ._."
-        
-    #avg game time in hours
+        # error
+        case _:
+            return "nothing, you inputed a wrong value ._."
+
+    # avg game time in hours
     rocketLeagueTime = 0.166667
     fortniteTime = 0.333
     dotaTime = 1
     lolTime = 0.5
 
-    calculatedString = "```json\n" + str(int(i/rocketLeagueTime)) + " Rocket League games or\n" + str(int(i/fortniteTime)) + " Fortnite games or\n" + str(int(i/lolTime)) + " LoL games or\n" + str(int(i/dotaTime))  + " DotA games\n"  + "```"
+    calculatedString = "```json\n" + str(int(i / rocketLeagueTime)) + " Rocket League games or\n" + str(
+        int(i / fortniteTime)) + " Fortnite games or\n" + str(int(i / lolTime)) + " LoL games or\n" + str(
+        int(i / dotaTime)) + " DotA games\n" + "```"
 
     return calculatedString
 
+
 @bot.command(name='imgtest')
-async def imgtest(ctx): 
+async def imgtest(ctx):
     imgNumber = 1
     for filename in os.listdir('./resources/eurovision/'):
-        if filename.endswith(".png") or filename.endswith(".jpg"): 
-            msg = await ctx.channel.send(file=discord.File('./resources/eurovision/' + "Screenshot_" + str(imgNumber) + ".png"))
+        if filename.endswith(".png") or filename.endswith(".jpg"):
+            msg = await ctx.channel.send(
+                file=discord.File('./resources/eurovision/' + "Screenshot_" + str(imgNumber) + ".png"))
             imgNumber = imgNumber + 1
             reactions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣',
-                 '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
+                         '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
 
             for i in reactions:
                 await msg.add_reaction(i)
@@ -916,10 +1003,42 @@ async def imgtest(ctx):
         else:
             continue
 
-@bot.command(name='eurovision')
-async def eurovision(ctx): 
+
+@bot.command(name='eurovote')
+async def eurovote(ctx):
     await ctx.author.create_dm()
-    await ctx.author.dm_channel.send( 'Eurovision voting test' )
+    await ctx.author.dm_channel.send('To vote, type "eurovote" here in my DMs')
+
+
+@bot.command(name='eurovision')
+async def eurovision(ctx):
+    votes = {f: 0 for f in finalists}
+    for filename in os.listdir('./resources/eurovision/votes'):
+        if filename.endswith(".json"):
+            with open(f'./resources/eurovision/votes/{filename}') as f:
+                content = "".join(f.readlines())
+                votes_json = json.loads(content)
+                for country, points in votes_json.items():
+                    votes[country] = votes[country] + points
+
+    sorted_votes = dict(sorted(votes.items(), key=lambda item: item[1], reverse=True))
+    msg_str = "\n"
+    for voted_for, points in sorted_votes.items():
+        msg_str += f"{voted_for}: {points}\n"
+    await ctx.send(f'Current standings: {msg_str}')
+
+    #
+    #     msg = await ctx.channel.send(
+    #         file=discord.File('./resources/eurovision/' + "Screenshot_" + str(imgNumber) + ".png"))
+    #     imgNumber = imgNumber + 1
+    #     reactions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣',
+    #                  '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
+    #
+    #     for i in reactions:
+    #         await msg.add_reaction(i)
+    #         continue
+    # else:
+    #     continue
 
 
 bot.run(token)
