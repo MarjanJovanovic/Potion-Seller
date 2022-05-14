@@ -27,6 +27,8 @@ defaultrng = 80
 lastmessage = "placeholder message"
 leaveChance = 70
 
+loopCounter = 0
+
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(
@@ -413,7 +415,7 @@ async def deathroll(ctx, num, gold, name1, name2):
 
 @deathroll.error
 async def deathroll_on_error(ctx, error):
-    await ctx.send("Invalid arguments. The correct arguments are: \n`potdeathroll ROLL_NUMBER GOLD_AMMOUNT NAME_1 NAME_2`")
+    await ctx.send("Invalid arguments. The correct arguments are: \n`potdeathroll ROLL_NUMBER GOLD_AMOUNT NAME_1 NAME_2`")
 
 # Sounds
 
@@ -614,14 +616,30 @@ async def lazarmeme(ctx, caption1: str):
 
 @bot.event
 async def on_message(message):
-    msg = str(message.clean_content.lower())  # string holder
-    if isinstance(message.channel, discord.DMChannel):
-        await message.author.send('Don\'t DM me, I\'m brewing potions you donkey!')
-        return
-    # if bot.dev and not await bot.is_owner(message.author): #always returns for any user
-    #     return
     if message.author == bot.user:
         return
+    msg = str(message.clean_content.lower())  # string holder
+    if isinstance(message.channel, discord.DMChannel):
+        if (message.clean_content.lower() == "euro"):
+            await message.author.send('Euro?')
+            
+        elif (str(message.clean_content.lower()).isdigit()):
+            await message.author.send('Ok')
+            pointsList = []
+            global loopCounter
+            while loopCounter < 10:
+                await message.author.send('Who would you like to give ' + str(loopCounter + 1) + 'points?')
+                newmsg = await bot.wait_for('message')
+                pointsList.append (newmsg)
+                loopCounter = loopCounter + 1
+            await message.author.send('Final list: ' + pointsList)
+            return
+        else:    
+            await message.author.send('???')
+            return
+    # if bot.dev and not await bot.is_owner(message.author): #always returns for any user
+    #     return
+
     if bot.user.mentioned_in(message) and message.mention_everyone is False:
         if 'help' in message.content.lower():
             commandListHelp = open('./resources/other/help.txt').read()
@@ -851,19 +869,11 @@ async def on_reaction_add(reaction, user):
 # async def meme(ctx):
 #     await ctx.send('https://api.imgflip.com/popular_meme_ids')
 
-@bot.command(name='calculatetime')
-async def timecalculator(ctx):
-    await ctx.send("Input the time in hours") 
-    msg = await bot.wait_for('message')
-    inputtime = msg.content
-    await ctx.send("With that ammount of time you can:") 
-    
-
 @bot.command(name='insteadofwow')
 async def timecalculator(ctx):
     await ctx.send("Wondering what else to spend time on instead of WoW?\nChoose an expansion: \n1. Classic\n2. TBC\n3. Shadowlands") 
     msg = await bot.wait_for('message')
-    await ctx.send(">>> With that ammount of time you can play:\n" + expansioncalculator(int(msg.content))) 
+    await ctx.send(">>> With that amount of time it would take you to level 1 character to max level, you can play:\n" + expansioncalculator(int(msg.content))) 
 
 def expansioncalculator(i):
     match i:
@@ -886,9 +896,30 @@ def expansioncalculator(i):
     dotaTime = 1
     lolTime = 0.5
 
-    calculatedString = "```json\n" + str(int(i/rocketLeagueTime)) + " Rocket League games\n" + str(int(i/fortniteTime)) + " Fortnite games\n" + str(int(i/lolTime)) + " LoL games\n" + str(int(i/dotaTime))  + " DotA games\n"  + "```"
+    calculatedString = "```json\n" + str(int(i/rocketLeagueTime)) + " Rocket League games or\n" + str(int(i/fortniteTime)) + " Fortnite games or\n" + str(int(i/lolTime)) + " LoL games or\n" + str(int(i/dotaTime))  + " DotA games\n"  + "```"
 
     return calculatedString
+
+@bot.command(name='imgtest')
+async def imgtest(ctx): 
+    imgNumber = 1
+    for filename in os.listdir('./resources/eurovision/'):
+        if filename.endswith(".png") or filename.endswith(".jpg"): 
+            msg = await ctx.channel.send(file=discord.File('./resources/eurovision/' + "Screenshot_" + str(imgNumber) + ".png"))
+            imgNumber = imgNumber + 1
+            reactions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣',
+                 '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
+
+            for i in reactions:
+                await msg.add_reaction(i)
+                continue
+        else:
+            continue
+
+@bot.command(name='eurovision')
+async def eurovision(ctx): 
+    await ctx.author.create_dm()
+    await ctx.author.dm_channel.send( 'Eurovision voting test' )
 
 
 bot.run(token)
