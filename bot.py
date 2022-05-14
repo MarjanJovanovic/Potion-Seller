@@ -625,7 +625,8 @@ async def on_message(message):
 
             done_msg = None
             while True:
-                while voting_start_time < voting_start_time + timedelta(minutes=25):
+                is_timedout = datetime.now() > voting_start_time + timedelta(minutes=25)
+                while not is_timedout:
                     votes = {}
                     for vote_msgs in voting_messages:
                         points = vote_msgs.get("points")
@@ -676,6 +677,9 @@ async def on_message(message):
 
                 if is_done:
                     break
+
+                if is_timedout:
+                    return
 
             if len(votes_to_submit) == len(voting_options):
                 print(f"{author.name} voted: {votes}")
