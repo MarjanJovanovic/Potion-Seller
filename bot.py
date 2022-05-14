@@ -592,103 +592,106 @@ async def on_message(message):
     msg = str(message.clean_content.lower())  # string holder
 
     if isinstance(message.channel, discord.DMChannel):
-        author = message.author
-        await message.author.send('Ok')
+        if message.clean_content.lower() == "eurovote":
 
-        allowed_reactions = set(finalists)
+            await message.channel.send(file=discord.File('./resources/eurovision/contestants.jpg'))
 
-        voting_start_time = datetime.now()
+            author = message.author
 
-        voting_messages = []
-        voting_options = [12, 10, 8, 7, 6, 5, 4, 3, 2, 1]
-        for i in voting_options:
-            await message.author.send('⠀\nWho would you like to give ' + str(i) + 'points?')
+            allowed_reactions = set(finalists)
+            voting_start_time = datetime.now()
 
-            first_msg = await message.author.send('⠀')
-            for flag in finalists[:13]:
-                await first_msg.add_reaction(flag)
+            voting_messages = []
+            voting_options = [12, 10, 8, 7, 6, 5, 4, 3, 2, 1]
+            for i in voting_options:
+                await message.author.send('⠀\nWho would you like to give ' + str(i) + 'points?')
 
-            second_msg = await message.author.send('⠀')
-            for flag in finalists[13:]:
-                await second_msg.add_reaction(flag)
+                first_msg = await message.author.send('⠀')
+                for flag in finalists[:13]:
+                    await first_msg.add_reaction(flag)
 
-            voting_messages.append({
-                "points": i,
-                "messages": [first_msg.id, second_msg.id]
-            })
-            await asyncio.sleep(2)
+                second_msg = await message.author.send('⠀')
+                for flag in finalists[13:]:
+                    await second_msg.add_reaction(flag)
 
-        done_msg = await message.author.send('Done?')
-        await done_msg.add_reaction('✅')
+                voting_messages.append({
+                    "points": i,
+                    "messages": [first_msg.id, second_msg.id]
+                })
+                await asyncio.sleep(2)
 
-        # Check if voting has finished
-
-        votes = {}
-        votes_to_submit = {}
-        while voting_start_time < voting_start_time + timedelta(minutes=5):
             votes = {}
-            for vote_msgs in voting_messages:
-                points = vote_msgs.get("points")
-                first_group, second_group = vote_msgs.get("messages")
-                first_group = await message.channel.fetch_message(first_group)
-                second_group = await message.channel.fetch_message(second_group)
+            votes_to_submit = {}
 
-                first_group_votes = list(filter(lambda x: x.count > 1, first_group.reactions))
-                second_group_votes = list(filter(lambda x: x.count > 1, second_group.reactions))
+            done_msg = None
+            while True:
+                while voting_start_time < voting_start_time + timedelta(minutes=25):
+                    votes = {}
+                    for vote_msgs in voting_messages:
+                        points = vote_msgs.get("points")
+                        first_group, second_group = vote_msgs.get("messages")
+                        first_group = await message.channel.fetch_message(first_group)
+                        second_group = await message.channel.fetch_message(second_group)
 
-                if not first_group_votes and not second_group_votes:
-                    continue
+                        first_group_votes = list(filter(lambda x: x.count > 1, first_group.reactions))
+                        second_group_votes = list(filter(lambda x: x.count > 1, second_group.reactions))
 
-                if len(first_group_votes) + len(second_group_votes) > 1:
-                    await message.author.send(f'Please select only one option for {points} points')
+                        if not first_group_votes and not second_group_votes:
+                            continue
+
+                        if len(first_group_votes) + len(second_group_votes) > 1:
+                            await message.author.send(f'Please select only one option for {points} points')
+                            await asyncio.sleep(1)
+                            continue
+
+                        voted_for = [*first_group_votes, *second_group_votes][0]
+
+                        if str(voted_for) not in allowed_reactions:
+                            await message.author.send(f'You cannot vote for {voted_for}...')
+                            await asyncio.sleep(1)
+                            continue
+
+                        if votes.get(voted_for):
+                            await message.author.send(f'You can only give one point to a country: {voted_for}')
+                            await asyncio.sleep(1)
+                            continue
+
+                        votes[str(voted_for)] = points
+
+                    if len(votes) == len(voting_options):
+                        votes_to_submit = votes
+                        break
+
+                if not done_msg:
+                    done_msg = await message.author.send('Done?')
+                    await done_msg.add_reaction('✅')
                     await asyncio.sleep(1)
+
+                is_done_msg = await message.channel.fetch_message(done_msg.id)
+                is_done = is_done_msg.reactions and is_done_msg.reactions[0].count > 1
+
+                if len(votes_to_submit) != len(voting_options):
+                    await message.author.send('Please correct your choices')
                     continue
 
-                voted_for = [*first_group_votes, *second_group_votes][0]
+                if is_done:
+                    break
 
-                if str(voted_for) not in allowed_reactions:
-                    await message.author.send(f'You cannot vote for {voted_for}...')
-                    await asyncio.sleep(1)
-                    continue
+            if len(votes_to_submit) == len(voting_options):
+                print(f"{author.name} voted: {votes}")
+                votes = votes_to_submit
+                await author.send('Voting finished, calculating and submitting votes...')
 
-                if votes.get(voted_for):
-                    await message.author.send(f'You can only give one point to a country: {voted_for}')
-                    await asyncio.sleep(1)
-                    continue
+                msg_str = "\n"
+                for voted_for, points in votes.items():
+                    msg_str += f"{voted_for}: {points}\n"
 
-                votes[str(voted_for)] = points
+                await author.send(f'Your votes: {msg_str}')
+                with open(f'./resources/eurovision/votes/{author.name}.json', 'w+') as votes_file:
+                    votes_file.write(json.dumps(votes))
+                await author.send("Successfully submitted")
 
-            is_done_msg = await message.channel.fetch_message(done_msg.id)
-            is_done = is_done_msg.reactions and is_done_msg.reactions[0].count > 1
-            if is_done:
-                votes_to_submit = votes
-                break
-
-            await asyncio.sleep(1)
-
-        if len(votes_to_submit) == len(voting_options):
-            print(f"{author.name} voted: {votes}")
-            votes = votes_to_submit
-            await author.send('Voting finished, calculating and submitting votes...')
-
-            msg_str = "\n"
-            for voted_for, points in votes.items():
-                msg_str += f"{voted_for}: {points}\n"
-
-            await author.send(f'Your votes: {msg_str}')
-            with open(f'./resources/eurovision/votes/{author.name}.json', 'w+') as votes_file:
-                votes_file.write(json.dumps(votes))
-            await author.send("Successfully submitted")
-
-        # pointsList = []
-        # global loopCounter
-        # while loopCounter < 10:
-        #     await message.author.send('Who would you like to give ' + str(loopCounter + 1) + 'points?')
-        #     newmsg = await bot.wait_for('message')
-        #     pointsList.append(newmsg)
-        #     loopCounter = loopCounter + 1
-        # await message.author.send('Final list: ' + pointsList)
-        return
+            return
 
     # if bot.dev and not await bot.is_owner(message.author): #always returns for any user
     #     return
