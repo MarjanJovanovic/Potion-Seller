@@ -582,7 +582,6 @@ async def lazarmeme(ctx, caption1: str):
 finalists = ['🇨🇿', '🇷🇴', '🇵🇹', '🇫🇮', '🇨🇭', '🇫🇷', '🇳🇴', '🇦🇲', '🇮🇹', '🇪🇸', '🇳🇱', '🇺🇦',
              '🇩🇪', '🇱🇹', '🇦🇿', '🇧🇪', '🇬🇷', '🇮🇸', '🇲🇩', '🇸🇪', '🇦🇺', '🇬🇧', '🇵🇱', '🇷🇸',
              '🇪🇪']
-
 @bot.event
 async def on_message(message):
     global finalists
@@ -624,8 +623,9 @@ async def on_message(message):
             votes_to_submit = {}
 
             done_msg = None
+            timeout = 25
             while True:
-                is_timedout = datetime.now() > voting_start_time + timedelta(minutes=25)
+                is_timedout = datetime.now() > voting_start_time + timedelta(minutes=timeout)
                 while not is_timedout:
                     votes = {}
                     for vote_msgs in voting_messages:
@@ -662,6 +662,15 @@ async def on_message(message):
                     if len(votes) == len(voting_options):
                         votes_to_submit = votes
                         break
+                    if datetime.now() > voting_start_time + timedelta(minutes=timeout):
+                        print(f"{str(message.author)} has timedout")
+                        await message.author.send(f"Your 25min voting session has been closed, please try again")
+                        return
+
+                if datetime.now() > voting_start_time + timedelta(minutes=timeout):
+                    print(f"{str(message.author)} has timedout")
+                    await message.author.send(f"Your 25min voting session has been closed, please try again")
+                    return
 
                 if not done_msg:
                     done_msg = await message.author.send('Done?')
@@ -678,8 +687,6 @@ async def on_message(message):
                 if is_done:
                     break
 
-                if is_timedout:
-                    return
 
             if len(votes_to_submit) == len(voting_options):
                 print(f"{author.name} voted: {votes}")
