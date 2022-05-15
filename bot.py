@@ -553,6 +553,45 @@ async def timer(ctx, min):
 async def timer_on_error(ctx, error):
     await ctx.send("Invalid arguments. The correct arguments are: \n`pottimer NUMBER(minutes)`")
 
+##################################################
+# command template
+# @bot.command(name='')
+# async def (ctx):
+#     response = ''
+#     await ctx.send(response)
+
+##################################################
+
+
+@bot.event
+async def on_ready():
+    print(f'{bot.user} has connected to Discord!')
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game("Brewing potions...  Type \"pothelp\" to see the available commands"))
+    print('bot id:' + str(bot.user.id))
+    if bot.user.id == 663812740594401317:
+        bot.dev = True
+    else:
+        bot.dev = False
+
+
+@bot.event
+async def on_member_join(member):
+    await member.create_dm()
+    await member.dm_channel.send(
+        f'Well met {member.name}. Welcome to ' + str(member.guild) + '!')
+
+
+############### Memes ###############
+
+@bot.command(name='drakememe')
+async def drakememe(ctx, caption0: str, caption1: str):
+    url = 'https://api.imgflip.com/caption_image'
+    params = dict(template_id=181913649, username=acc_username,
+                  password=acc_password, text0=caption0, text1=caption1)
+    res = requests.get(url, params=params)
+
+    data = res.json()
+
     print("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
           "\nMeme: " + str(data['data']['url']))
 
