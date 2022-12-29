@@ -22,7 +22,10 @@ token = os.getenv('DISCORD_TOKEN')
 acc_username = os.getenv('IMGFLIP_USERNAME')
 acc_password = os.getenv('IMGFLIP_PASSWORD')
 
-bot = commands.Bot(command_prefix='pot')
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(intents=discord.Intents.all(), command_prefix='pot')
+# bot = commands.Bot()
 votemsgid = 123  # placeholder
 defaultrng = 80
 lastmessage = "placeholder message"
@@ -31,7 +34,7 @@ leaveChance = 70
 loopCounter = 0
 
 logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(
     filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter(
@@ -180,10 +183,10 @@ async def vote(ctx):
     answers = []
 
     def isSameUser(m):
-        # print(str(m.content))
+        # logger.info(str(m.content))
         # if m.content == "done":
         #     return False
-        print("Same author: " + str(m.author == msgauthor))
+        logger.info("Same author: " + str(m.author == msgauthor))
         return m.author == msgauthor
 
     # await message.channel.send('Type out a question:')
@@ -197,15 +200,15 @@ async def vote(ctx):
         await ctx.channel.send('Type out an answer:')
         await bot.wait_for('', check=isSameUser, timeout=5.0)
         answers.append(ctx.message.content)
-        print("proso: " + str(len(answers)))
-        print("currmsg: " + ctx.message.content)
-        print("currList: ")
-        print(answers)
+        logger.info("proso: " + str(len(answers)))
+        logger.info("currmsg: " + ctx.message.content)
+        logger.info("currList: ")
+        logger.info(answers)
         if ctx.message.content == "done":
             return False
         # if 'done' in message.content.lower():
         #     return
-    print("final done")
+    logger.info("final done")
 
 
 # Movies
@@ -275,7 +278,7 @@ async def movievote(ctx):
 
     offset = 12  # offset the number by a couple of seconds
     randomoffset = random.randint(0, offset) - int(offset / 2)
-    print(randomoffset)
+    logger.info(randomoffset)
     if randomoffset > 0:
         # delay before getting the votes
         await asyncio.sleep(delayseconds + randomoffset)
@@ -285,7 +288,7 @@ async def movievote(ctx):
     newmsg = await ctx.fetch_message(msgid)
 
     counts = {react.emoji: react.count for react in newmsg.reactions}
-    print(counts)
+    logger.info(counts)
 
     maxvote = 0
     maxemote = "NotAvailable"
@@ -348,9 +351,9 @@ async def movievote(ctx):
 @bot.command(name='movieadd')
 async def movieadd(ctx, text):
     with open('./resources/movies/' + str(ctx.guild) + '.txt') as f:
-        print("passed 1")
+        logger.info("passed 1")
         if str(ctx.message.author) in f.read():
-            print("passed 2")
+            logger.info("passed 2")
 
             await ctx.send("You have already suggested a movie!")
             f.close()
@@ -512,8 +515,8 @@ async def playhelp(ctx):
     responseString = ""
     currChar = response[0][0]
     for i in response:
-        # print ("I: " + i)
-        # print ("currChar: " + currChar + "\n" )
+        # logger.info ("I: " + i)
+        # logger.info ("currChar: " + currChar + "\n" )
         if currChar == i[0]:
             responseString = responseString + i + "  "
         else:
@@ -565,14 +568,13 @@ async def timer_on_error(ctx, error):
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user} has connected to Discord!')
+    logger.info(f'{bot.user} has connected to Discord!')
     await bot.change_presence(status=discord.Status.online, activity=discord.Game("Brewing potions...  Type \"pothelp\" to see the available commands"))
-    print('bot id:' + str(bot.user.id))
+    logger.info('bot id:' + str(bot.user.id))
     if bot.user.id == 663812740594401317:
         bot.dev = True
     else:
         bot.dev = False
-
 
 @bot.event
 async def on_member_join(member):
@@ -592,7 +594,7 @@ async def drakememe(ctx, caption0: str, caption1: str):
 
     data = res.json()
 
-    print("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
+    logger.info("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
           "\nMeme: " + str(data['data']['url']))
 
     await ctx.send(data['data']['url'])
@@ -610,7 +612,7 @@ async def lazarmeme(ctx, caption1: str):
 
     data = res.json()
 
-    print("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
+    logger.info("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
           "\nMeme: " + str(data['data']['url']))
 
     await ctx.send(data['data']['url'])
@@ -623,6 +625,7 @@ finalists = ['🇨🇿', '🇷🇴', '🇵🇹', '🇫🇮', '🇨🇭', '🇫�
              '🇪🇪']
 @bot.event
 async def on_message(message):
+    randroll = random.randint(1, 100)
     global finalists
 
     if message.author == bot.user:
@@ -702,12 +705,12 @@ async def on_message(message):
                         votes_to_submit = votes
                         break
                     if datetime.now() > voting_start_time + timedelta(minutes=timeout):
-                        print(f"{str(message.author)} has timedout")
+                        logger.info(f"{str(message.author)} has timedout")
                         await message.author.send(f"Your 25min voting session has been closed, please try again")
                         return
 
                 if datetime.now() > voting_start_time + timedelta(minutes=timeout):
-                    print(f"{str(message.author)} has timedout")
+                    logger.info(f"{str(message.author)} has timedout")
                     await message.author.send(f"Your 25min voting session has been closed, please try again")
                     return
 
@@ -728,7 +731,7 @@ async def on_message(message):
 
 
             if len(votes_to_submit) == len(voting_options):
-                print(f"{author.name} voted: {votes}")
+                logger.info(f"{author.name} voted: {votes}")
                 votes = votes_to_submit
                 await author.send('Voting finished, calculating and submitting votes...')
 
@@ -768,10 +771,15 @@ async def on_message(message):
         emoji = discord.utils.get(message.guild.emojis, name='lazar')
         if emoji:
             await message.add_reaction(emoji)
+
+    if 'www.blic.rs' in message.clean_content.lower():
+        logger.info(message.author + " sent a banned link")
+        await message.author.timeout(timedelta(minutes=5))
+        await message.delete(delay=5)
+    
     if str(message.author) == "Faust#5371":  # Lazar
         messageholder = ""
         i = True
-        randroll = random.randint(1, 100)
         if (randroll > 90):
             for char in message.content:
                 if i:
@@ -780,14 +788,14 @@ async def on_message(message):
                     messageholder += char.lower()
                 if char != ' ':
                     i = not i
-            # print (messageholder)
+            # logger.info (messageholder)
             # await message.edit(content=messageholder)
             await message.channel.send(messageholder)
 
     # Test
     # if str(message.author) == "Mokipls#3810":
 
-    if str(message.author) == "Schmeiser#3016":
+    if str(message.author) == "Schmeiser#3016" and randroll > 90:
         await message.add_reaction('🍁')
 
     if str(message.author) == "harrowr#8165":  # rename user to his sent message by random
@@ -798,9 +806,9 @@ async def on_message(message):
             return
         lastmessage = message.clean_content
 
-        randroll = random.randint(1, 100)
+        # randroll = random.randint(1, 100)
         if (randroll > defaultrng):
-            # print ("Moca rolao: " + str(randroll) + str(message.content))
+            # logger.info ("Moca rolao: " + str(randroll) + str(message.content))
             if message.content:
                 if "<" not in message.content:  # User id on discord
                     if "http" not in message.content:  # Link
@@ -812,12 +820,12 @@ async def on_message(message):
                         if emoji:
                             await message.add_reaction(emoji)
         else:
-            # print ("Moca nije rolao: " + str(randroll) + str(message.content))
+            # logger.info ("Moca nije rolao: " + str(randroll) + str(message.content))
             randminiroll = random.randint(3, 10)
             defaultrng = defaultrng - randminiroll
 
     # if any(message.guild.emojis in message.clean_content.lower()):
-    #     print ("ima")
+    #     logger.info ("ima")
     # emokilist = list(message.guild.emojis())
 
     # if emokilist[emojis] in message.clean_content.lower():
@@ -876,10 +884,11 @@ async def on_voice_state_update(member, before, after):
     current_time = now.strftime("%H:%M:%S")
 
     if (before.channel is None and after.channel is not None):
-        print('Server: ' + str(member.guild) + ' Joined the voice: ' + str(member) +
-              " Current Time =", current_time)
-        if (str(member) == 'kole16#4134'):
+        logger.info('Server: ' + str(member.guild) + ' Joined the voice: ' + str(member) +
+              " Current Time =" + current_time)
 
+        randroll = random.randint(1, 100)
+        if (str(member) == 'kole16#4134' and randroll > 50):
             # User Joins a voice channel
             voice = get(bot.voice_clients, guild=member.guild)
             await asyncio.sleep(5)
@@ -898,8 +907,7 @@ async def on_voice_state_update(member, before, after):
             guild = member.guild.voice_client
             await guild.disconnect()
 
-        if (str(member) == 'BABLIBOYBBB#3809'):
-
+        elif (str(member) == 'BABLIBOYBBB#3809'):
             # User Joins a voice channel
             voice = get(bot.voice_clients, guild=member.guild)
             await asyncio.sleep(1)
@@ -917,13 +925,30 @@ async def on_voice_state_update(member, before, after):
             guild = member.guild.voice_client
             await guild.disconnect()
 
+        elif (randroll > 95):
+            # User Joins a voice channel
+            voice = get(bot.voice_clients, guild=member.guild)
+            await asyncio.sleep(1)
+            if member == bot.user:  # check for self
+                return
+            if member.bot:  # check for other bots
+                return
+            if voice and voice.is_connected():
+                await voice.move_to(after.channel)
+            else:
+                voice = await after.channel.connect()
+            await asyncio.sleep(1)
+            voice.play(FFmpegPCMAudio('./resources/sounds/mp3/dobro.mp3'))
+            await asyncio.sleep(10)
+            guild = member.guild.voice_client
+            await guild.disconnect()
 
     elif (after.channel is None):
-        # print('left')
+        # logger.info('left')
         if before.channel.members:  # check if list members is empty
-            # print('empty channel')
+            # logger.info('empty channel')
             randroll = random.randint(1, 100)
-            print('Server: ' + str(member.guild) + ' Left the voice:   ' + str(member) +
+            logger.info('Server: ' + str(member.guild) + ' Left the voice:   ' + str(member) +
                   " Current Time = " + str(current_time) + " " + str(randroll))
             voice = get(bot.voice_clients, guild=member.guild)
             if (randroll > leaveChance):
@@ -948,7 +973,7 @@ async def on_voice_state_update(member, before, after):
 # async def on_raw_reaction_add(payload):
 #     if payload.member != None:
 #         return
-#     # print(payload)
+#     # logger.info(payload)
 #     author = await bot.fetch_user(payload.user_id)
 #     if author.bot:
 #         return
@@ -958,12 +983,12 @@ async def on_voice_state_update(member, before, after):
 #
 #     for reaction in message.reactions:
 #         if reaction.count > 1:
-#             print("found", reaction)
+#             logger.info("found", reaction)
 #             await message.remove_reaction(reaction, author)
 #
 #     emoji_to_add = payload.emoji.name
 #     await message.add_reaction(emoji_to_add)
-#     print(author, type(author))
+#     logger.info(author, type(author))
 #     # currmsg = discord.utils.get(await currchannel.history(limit=100).flatten(), name=author)
 
 
@@ -991,7 +1016,7 @@ async def on_reaction_add(reaction, user):
 
 #     data = res.json()
 
-#     print("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
+#     logger.info("\n\nTimestamp: " + str(datetime.now().strftime("%Y-%m-%d %H-%M-%S")) +
 #           "\nMeme: " + str(data['data']['url']))
 
 #     await ctx.send(data['data']['url'])
