@@ -54,5 +54,5 @@ ispalaadd, acimadd, lazkeadd, mocaadd
 
 **PyMongo**
 
-pip install pymongo
+>pip install pymongo
 
