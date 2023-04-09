@@ -42,7 +42,7 @@ ispalaadd, acimadd, lazkeadd, mocaadd
   
 **Dotenv**  
 
->python -m pip install python-dotenvg  
+>python -m pip install python-dotenvg   /    pip install python-dotenv
 
 **PyNaCl**  
 
