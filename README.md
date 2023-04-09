@@ -51,3 +51,8 @@ ispalaadd, acimadd, lazkeadd, mocaadd
 **Ffmpeg**  
 
 >https://www.thewindowsclub.com/how-to-install-ffmpeg-on-windows-10  
+
+**PyMongo**
+
+pip install pymongo
+
